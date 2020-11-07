@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="app">
+        <div>
+            <input type="text" v-model="username">
+            <input type="text" v-model="password">
+        </div>
+        <button @click="registClick">点击注册</button>
+        <button @click="loginClick">点击登录</button>
+        <ul>
+            <li v-for="data in datalist" :key="data.filmId">
+                <img :src="data.poster" :alt="data.name">
+                <h3>{{data.name}}</h3>
+                <p>{{data.synopsis}}</p>
+            </li>
+        </ul>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        var app = new Vue({
+            el: "#app",
+            data: {
+                datalist: [],
+                username: "",
+                password: ""
+            },
+            created() {
+                // axios get请求
+                axios.get('./test.json').then(res => {
+                    //res.data才是真正的后端数据
+                    console.log(res.data);
+                    // 同步数据渲染页面
+                    this.datalist = res.data.data.films;
+                })
+                // axios get请求参数
+                axios.get('./test.json', {
+                    params: {
+                        a: 1, b: 2
+                    }
+                }).then(res => {
+                    // res.data才是真正的后端数据
+                    console.log(res.data);
+                })
+            },
+            methods: {
+                registClick() {
+                    // axios post x-www-form-urlencoded
+                    axios.post('http://localhost:3000/users/regist',
+                        `username=${this.username}&password=${this.password}`
+                    ).then(res => {
+                        console.log(res.data);
+                    })
+                },
+                loginClick() {
+                    // axios post json
+                    axios.post('http://localhost:3000/users/login',
+                        {
+                            username: this.username,
+                            password: this.password
+                        }
+                    ).then(res => {
+                        console.log(res.data);
+                    })
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>
